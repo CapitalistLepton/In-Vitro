@@ -3,10 +3,19 @@
     <head>
         <title>In Vitro</title>
         <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="main.css" />
     </head>
     <body>
         <div id="antibiotics">
-            <p id="balance">$500</p>
+            <p>Balance: $<span id="balance">500</span></p>
+            <p>Cells: <span id="cell-count">45</span></p>
+            <!-- Antibiotic buttons -->
+            <label for="octothylene">Octothylene</label>
+            <button id="octothylene">$5</button><br />
+            <label for="plastosis">Plastosis</label>
+            <button id="plastosis">$35</button><br />
+            <label for="radion">Radion</label>
+            <button id="radion">$10</button><br />
         </div>
         <canvas id="game" width="600" height="400"></canvas>
         <script src="bundle.js"></script>

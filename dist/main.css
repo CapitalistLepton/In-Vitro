@@ -1,0 +1,15 @@
+html {
+    background: #228;
+    color: #fff;
+    font-family: monospace;
+    font-size: 1.2rem;
+}
+#antibiotics {
+    margin-top: 3%;
+    margin-left: 5%;
+    float: left;
+}
+#game {
+    margin-top: 3%;
+    float: left;
+}
