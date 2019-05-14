@@ -1,4 +1,4 @@
-import { Bacterium } from "./bacteria";
+import Bacterium from "./bacteria";
 
 window.onload = main;
 
@@ -10,6 +10,11 @@ function main(): void {
             ctx.fillRect(25, 25, 25, 25);
         }
     }
-    const bac = new Bacterium();
-    console.log("Genome: ", bac.genome);
+    const bacteria: Bacterium[] = [];
+    for (let i = 0; i < 45; i++) {
+        bacteria.push(new Bacterium());
+    }
+    for (let i = 0; i < 45; i++) {
+        console.log(bacteria[i].toString());
+    }
 }
