@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "baseUrl": ".",
+        "paths": {
+            "prando": ["node_modules/prando/dist/Prando.d.ts"]
+        },
+        "sourceMap": true,
+        "alwaysStrict": true,
+        "strictNullChecks": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "module": "es6",
+        "target": "es5"
+    }
+}
