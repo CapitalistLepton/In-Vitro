@@ -1,20 +1,19 @@
-import Bacterium from "./bacteria";
+import GameEngine from "./game-engine";
 
 window.onload = main;
 
 function main(): void {
+    const game = new GameEngine();
+
     const canvas = <HTMLCanvasElement> document.getElementById("game");
     if (canvas != null) {
         const ctx = canvas.getContext("2d");
         if (ctx != null) {
-            ctx.fillRect(25, 25, 25, 25);
+            game.start(ctx);
+        } else {
+            console.error("Cannot get canvas context");
         }
-    }
-    const bacteria: Bacterium[] = [];
-    for (let i = 0; i < 45; i++) {
-        bacteria.push(new Bacterium());
-    }
-    for (let i = 0; i < 45; i++) {
-        console.log(bacteria[i].toString());
+    } else {
+        console.error("Cannot get canvas");
     }
 }
