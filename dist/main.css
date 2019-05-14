@@ -11,5 +11,8 @@ html {
 }
 #game {
     margin-top: 3%;
+    margin-left: 2%;
     float: left;
+    background: #fff;
+    border: 2px solid #888;
 }

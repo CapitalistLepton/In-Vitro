@@ -6,6 +6,7 @@ class GameEngine {
     private static readonly GRID_WIDTH = 60;
     private static readonly GRID_HEIGHT = 40;
     private static readonly NUM_BACTERIA = 45;
+    private static readonly SQUARE_SIZE = 15;
 
     private static prng = new Prando(42);
 
@@ -35,9 +36,9 @@ class GameEngine {
         for (let r = 0; r < GameEngine.GRID_HEIGHT; r++) {
             for (let c = 0; c < GameEngine.GRID_WIDTH; c++) {
                 if (this.bacteria[r * GameEngine.GRID_WIDTH + c] != null) {
-                    this.ctx.fillRect(c * 10, r * 10, 10, 10);
+                    this.ctx.fillRect(c * GameEngine.SQUARE_SIZE, r * GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE);
                 } else {
-                    this.ctx.strokeRect(c * 10, r * 10, 10, 10);
+                    this.ctx.strokeRect(c * GameEngine.SQUARE_SIZE, r * GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE);
                 }
             }
         }
