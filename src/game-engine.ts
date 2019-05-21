@@ -1,27 +1,16 @@
 import Prando from "prando";
 import Bacterium from "./bacteria";
+import BacteriaGrid from "./bacteria-grid";
 
 class GameEngine {
 
-    private static readonly GRID_WIDTH = 60;
-    private static readonly GRID_HEIGHT = 40;
-    private static readonly NUM_BACTERIA = 45;
     private static readonly SQUARE_SIZE = 15;
 
-    private static prng = new Prando(42);
-
-    private bacteria: Array<Bacterium|null>;
+    private bacteriaGrid: BacteriaGrid;
     private ctx: CanvasRenderingContext2D;
 
     constructor() {
-        this.bacteria = new Array(GameEngine.GRID_WIDTH * GameEngine.GRID_HEIGHT);
-        for (let i = 0; i < GameEngine.NUM_BACTERIA; i++) {
-            let rand = GameEngine.prng.nextInt(0, GameEngine.GRID_WIDTH * GameEngine.GRID_HEIGHT - 1);
-            while (this.bacteria[rand] != null) {
-                rand = GameEngine.prng.nextInt(0, GameEngine.GRID_WIDTH * GameEngine.GRID_HEIGHT - 1);
-            }
-            this.bacteria[rand] = new Bacterium();
-        }
+        this.bacteriaGrid = new BacteriaGrid();
     }
 
     start(ctx: CanvasRenderingContext2D) {
@@ -33,15 +22,16 @@ class GameEngine {
     }
 
     private draw() {
-        for (let r = 0; r < GameEngine.GRID_HEIGHT; r++) {
-            for (let c = 0; c < GameEngine.GRID_WIDTH; c++) {
-                if (this.bacteria[r * GameEngine.GRID_WIDTH + c] != null) {
-                    this.ctx.fillRect(c * GameEngine.SQUARE_SIZE, r * GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE);
-                } else {
-                    this.ctx.strokeRect(c * GameEngine.SQUARE_SIZE, r * GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE);
-                }
+        this.ctx.save();
+        for (let r = 0; r < BacteriaGrid.GRID_HEIGHT; r++) {
+            for (let c = 0; c < BacteriaGrid.GRID_WIDTH; c++) {
+                this.ctx.fillStyle = this.bacteriaGrid.stainBacterium(r, c);
+                this.ctx.fillRect(c * GameEngine.SQUARE_SIZE,
+                    r * GameEngine.SQUARE_SIZE, GameEngine.SQUARE_SIZE,
+                    GameEngine.SQUARE_SIZE);
             }
         }
+        this.ctx.restore();
     }
 }
 
