@@ -1,7 +1,7 @@
 {
   "name": "in-virtro",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Web game simulating bacteria growth and evolution",
   "private": true,
   "dependencies": {
     "prando": "^5.1.0"
@@ -18,5 +18,5 @@
   },
   "keywords": [],
   "author": "Zane Littrell",
-  "license": "ISC"
+  "license": "GPL-3.0-or-later"
 }
