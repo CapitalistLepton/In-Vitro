@@ -24,6 +24,7 @@ class Bacterium {
     private static prng = new Prando(42);
 
     private genome: string;
+    private moves: Array<[number, number]>;
 
     constructor() {
         let random = Bacterium.prng.next();
@@ -43,6 +44,28 @@ class Bacterium {
         }
 
         this.genome += "Cc";
+        this.genome += "Dd";
+    }
+
+    possibleMoves(): Array<[number, number]> {
+        if (!this.moves) {
+            let moves: Array<[number, number]>|null = null;
+            let gene = this.genome.substr(6, 8);
+            console.debug(gene);
+            switch (gene) {
+                case "DD": moves = [[-1, -1], [0, -1], [1, -1], [-1, 0],
+                    [1, 0], [-1, 1], [0, 1], [1, 1]]; break;
+                case "Dd": moves = [[0, -1], [-1, 0], [1, 0], [0, 1]];
+                    break;
+                case "dd": moves = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+                    break;
+                default: console.error("Invalid 'D' gene");
+            }
+            if (moves) {
+                this.moves = moves;
+            }
+        }
+        return this.moves;
     }
 
     toString(): string {

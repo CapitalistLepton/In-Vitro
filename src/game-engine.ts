@@ -34,10 +34,17 @@ class GameEngine {
 
     start(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
-        this.draw();
+        let that = this;
+        console.log("Started");
+        window.setInterval(function() {
+            console.log("running");
+            that.draw();
+            that.update();
+        }, 10);
     }
 
     private update() {
+        this.bacteriaGrid.moveBacteria();
     }
 
     private draw() {

@@ -28,7 +28,7 @@ class BacteriaGrid {
 
     private static prng = new Prando(42);
 
-    private bacteria: Array<Bacterium|null>;
+    private bacteria: Array<Bacterium>;
 
     constructor() {
         this.bacteria = new Array(BacteriaGrid.GRID_WIDTH * BacteriaGrid.GRID_HEIGHT);
@@ -47,9 +47,7 @@ class BacteriaGrid {
         let color = "#ffffff";
         let bac = this.bacteria[row * BacteriaGrid.GRID_WIDTH + col];
         if (bac != null) {
-            let genes = bac.toString();
-            let substr = genes.substring(0, 4);
-            console.log(substr);
+            let substr = bac.toString().substring(0, 4);
             switch (substr) {
                 case "AABB": color = "#ff0000"; break;
                 case "AaBB": color = "#ff8800"; break;
@@ -60,11 +58,50 @@ class BacteriaGrid {
                 case "AAbb": color = "#000000"; break;
                 case "Aabb": color = "#555555"; break;
                 case "aabb": color = "#aaaaaa"; break;
-                default: console.error("Wrong");
+                default: console.error("Invalid genotype in stainBacterium");
             }
         }
-        console.debug(color);
         return color;
+    }
+
+    moveBacteria(): void {
+        const size = BacteriaGrid.GRID_WIDTH * BacteriaGrid.GRID_HEIGHT;
+        let newBacteria = new Array(size);
+        for (let i = 0; i < size; i++) {
+            let bac = this.bacteria[i]
+            if (bac != null) {
+                let thisY = Math.floor(i / BacteriaGrid.GRID_WIDTH);
+                let thisX = i % BacteriaGrid.GRID_WIDTH;
+                let moves = bac.possibleMoves();
+                moves = moves.filter((coord) => {
+                    let x = coord[0] + thisX;
+                    let y = coord[1] + thisY;
+                    return x >= 0 && x < BacteriaGrid.GRID_WIDTH && y >= 0
+                        && y < BacteriaGrid.GRID_HEIGHT;
+                });
+                let possible = moves.map((coord) => {
+                    return coord[0] + thisX +
+                        (coord[1] + thisY) * BacteriaGrid.GRID_WIDTH;
+                });
+                console.debug(possible);
+                let rand = BacteriaGrid.prng.nextInt(0, possible.length - 1);
+                console.debug(rand);
+                let index = possible[rand];
+                while (this.bacteria[possible[rand]] != null) {
+                    possible = possible.splice(rand, 1);
+                    if (possible.length == 0 || possible == possible.splice(rand, 1)) {
+                        console.error("No moves");
+                        newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX] =
+                            bac;
+                        break; // Don't move this since it cannot move
+                    }
+                    console.log(possible.length);
+                    rand = BacteriaGrid.prng.nextInt(0, possible.length - 1);
+                }
+                newBacteria[possible[rand]] = bac;
+            }
+        }
+        this.bacteria = newBacteria;
     }
 }
 
