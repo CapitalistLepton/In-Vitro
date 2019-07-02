@@ -29,7 +29,6 @@ class BacteriaGrid {
     private static prng = new Prando(42);
 
     private bacteria: Array<Bacterium>;
-    private previous: Array<Bacterium>;
 
     constructor() {
         this.bacteria = new Array(BacteriaGrid.GRID_WIDTH * BacteriaGrid.GRID_HEIGHT);
@@ -91,7 +90,7 @@ class BacteriaGrid {
                     possible = possible.splice(rand, 1);
                     if (possible.length == 0 || possible == possible.splice(rand, 1)) {
                         console.error("No moves");
-                        if (newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX] != null) {
+                        if (newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX]) {
                             throw new Error("Overlapping bacteria");
                         }
                         newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX] =
@@ -100,7 +99,7 @@ class BacteriaGrid {
                     }
                     rand = BacteriaGrid.prng.nextInt(0, possible.length - 1);
                 }
-                newBacteria[possible[rand]] = bac;
+                newBacteria[index] = bac;
             }
         }
         this.bacteria = newBacteria;
@@ -109,33 +108,13 @@ class BacteriaGrid {
     count(): void {
         const size = BacteriaGrid.GRID_WIDTH * BacteriaGrid.GRID_HEIGHT;
         let count = 0;
-        let positions = new Array();
         for (let i = 0; i < size; i++) {
-            if (this.bacteria[i] != null) {
-                let x = i % BacteriaGrid.GRID_WIDTH;
-                let y = Math.floor(i / BacteriaGrid.GRID_HEIGHT);
-                this.bacteria[i].setPos(x, y);
-                positions.push(this.bacteria[i]);
+            if (this.bacteria[i]) {
                 count++;
             }
         }
         if (count < BacteriaGrid.NUM_BACTERIA) {
-            console.error(positions);
-            console.error(this.previous);
-            //let missing = this.previous.filter((bac) => {
-            //    let contains = false;
-            //    for (let i = 0; i < positions.length; i++) {
-            //        if (positions[i].id == bac.id) {
-            //            contains = true;
-            //            break;
-            //        }
-            //    }
-            //    return !contains;
-            //})[0];
-            //console.error(missing);
             throw new Error("Lost some bacteria");
-        } else {
-            this.previous = positions;
         }
     }
 }
