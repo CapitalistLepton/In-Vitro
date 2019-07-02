@@ -39,7 +39,7 @@ class BacteriaGrid {
                 rand = BacteriaGrid.prng.nextInt(0, BacteriaGrid.GRID_WIDTH *
                     BacteriaGrid.GRID_HEIGHT - 1);
             }
-            this.bacteria[rand] = new Bacterium(i);
+            this.bacteria[rand] = new Bacterium();
         }
     }
 
@@ -87,17 +87,19 @@ class BacteriaGrid {
                 let index = possible[rand];
                 // Check if the place is occupied
                 while (this.bacteria[index] || newBacteria[index]) {
-                    possible = possible.splice(rand, 1);
-                    if (possible.length == 0 || possible == possible.splice(rand, 1)) {
+                    let filter = possible.filter((move) => {
+                        return move !== possible[rand];
+                    });
+                    if (filter.length === 0 || possible === filter) {
                         console.error("No moves");
-                        if (newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX]) {
-                            throw new Error("Overlapping bacteria");
-                        }
-                        newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX] =
-                            bac;
+                        throw new Error("Overlap");
+                        //newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX] =
+                        //    bac;
                         break; // Don't move this since it cannot move
                     }
+                    possible = filter;
                     rand = BacteriaGrid.prng.nextInt(0, possible.length - 1);
+                    index = possible[rand];
                 }
                 newBacteria[index] = bac;
             }
@@ -105,17 +107,32 @@ class BacteriaGrid {
         this.bacteria = newBacteria;
     }
 
-    count(): void {
-        const size = BacteriaGrid.GRID_WIDTH * BacteriaGrid.GRID_HEIGHT;
-        let count = 0;
-        for (let i = 0; i < size; i++) {
-            if (this.bacteria[i]) {
-                count++;
+    reproduce(): void {
+        for (let i = 0; i < this.bacteria.length; i++) {
+            if (this.bacteria[i] && BacteriaGrid.prng.next() <= 0.25) {
+                let bac = this.bacteria[i].asexuallyReproduce();
+                let x = Math.floor(i / BacteriaGrid.GRID_WIDTH);
+                let y = i % BacteriaGrid.GRID_WIDTH;
+                this.placeBacteria(bac, x, y);
             }
         }
-        if (count < BacteriaGrid.NUM_BACTERIA) {
-            throw new Error("Lost some bacteria");
-        }
+    }
+
+    private placeBacteria(bac: Bacterium, x: number, y: number): void {
+       let possible = [
+            (x - 1) + (y - 1) * BacteriaGrid.GRID_WIDTH,
+            x + (y - 1) * BacteriaGrid.GRID_WIDTH,
+            (x + 1) + (y - 1) * BacteriaGrid.GRID_WIDTH,
+            (x - 1) + y * BacteriaGrid.GRID_WIDTH,
+            (x + 1) + y * BacteriaGrid.GRID_WIDTH,
+            (x - 1) + (y + 1) * BacteriaGrid.GRID_WIDTH,
+            x + (y + 1) * BacteriaGrid.GRID_WIDTH,
+            (x + 1) + (y + 1) * BacteriaGrid.GRID_WIDTH,
+        ];
+        // Remove occupied spots
+        possible = possible.filter((index) => !this.bacteria[index]);
+        let spot = possible[BacteriaGrid.prng.nextInt(0, possible.length - 1)];
+        this.bacteria[spot] = bac;
     }
 }
 

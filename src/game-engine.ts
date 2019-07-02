@@ -50,12 +50,7 @@ class GameEngine {
 
     private update() {
         this.bacteriaGrid.moveBacteria();
-        try {
-            this.bacteriaGrid.count();
-        } catch (e) {
-            console.error(e);
-            throw e;
-        }
+        this.bacteriaGrid.reproduce();
     }
 
     private draw() {

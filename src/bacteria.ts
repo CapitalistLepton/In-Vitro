@@ -26,7 +26,7 @@ class Bacterium {
     private genome: string;
     private moves: Array<[number, number]>;
 
-    constructor(id: number) {
+    constructor() {
         let random = Bacterium.prng.next();
         if (random > 0.75) {
             this.genome = "AA";
@@ -45,15 +45,12 @@ class Bacterium {
 
         this.genome += "Cc";
         this.genome += "Dd";
-
-        this.id = id;
     }
 
     possibleMoves(): Array<[number, number]> {
         if (!this.moves) {
             let moves: Array<[number, number]>|null = null;
-            let gene = this.genome.substr(6, 8);
-            console.debug(gene);
+            let gene = this.genome.substring(6, 8);
             switch (gene) {
                 case "DD": moves = [[-1, -1], [0, -1], [1, -1], [-1, 0],
                     [1, 0], [-1, 1], [0, 1], [1, 1]]; break;
@@ -68,6 +65,28 @@ class Bacterium {
             }
         }
         return this.moves;
+    }
+
+    asexuallyReproduce(): Bacterium {
+        let geneNum = Math.floor(this.genome.length / 2);
+        let geneIndex = Bacterium.prng.nextInt(0, geneNum - 1) * 2;
+        let geneStr = this.genome.substring(geneIndex, geneIndex + 2);
+
+        // Create a mutation of the geneStr
+        let possible = [];
+        possible.push(geneStr.toUpperCase());
+        possible.push(geneStr.toLowerCase());
+        let camel = geneStr.charAt(0).toUpperCase() +
+            geneStr.charAt(1).toLowerCase();
+        possible.push(camel);
+        possible = possible.filter((str) => str !== geneStr);
+        let newGene = possible[Bacterium.prng.nextInt(0, possible.length - 1)];
+
+        let newBac = new Bacterium();
+        // Splice in the new mutation
+        newBac.genome = this.genome.substring(0, geneIndex) + newGene +
+            this.genome.substring(geneIndex + 2);
+        return newBac;
     }
 
     toString(): string {
