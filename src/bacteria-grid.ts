@@ -64,51 +64,62 @@ class BacteriaGrid {
         return color;
     }
 
+    /*
+     * Moves all the bacteria currently in the grid.
+     */
     moveBacteria(): void {
         const size = BacteriaGrid.GRID_WIDTH * BacteriaGrid.GRID_HEIGHT;
         let newBacteria = new Array(size);
         for (let i = 0; i < size; i++) {
             let bac = this.bacteria[i]
             if (bac) {
-                let thisY = Math.floor(i / BacteriaGrid.GRID_WIDTH);
-                let thisX = i % BacteriaGrid.GRID_WIDTH;
-                let moves = bac.possibleMoves();
-                moves = moves.filter((coord) => {
-                    let x = coord[0] + thisX;
-                    let y = coord[1] + thisY;
-                    return x >= 0 && x < BacteriaGrid.GRID_WIDTH && y >= 0
-                        && y < BacteriaGrid.GRID_HEIGHT;
-                });
-                let possible = moves.map((coord) => {
-                    return (coord[0] + thisX) +
-                        ((coord[1] + thisY) * BacteriaGrid.GRID_WIDTH);
-                });
-                let rand = BacteriaGrid.prng.nextInt(0, possible.length - 1);
-                let index = possible[rand];
-                // Check if the place is occupied
-                while (this.bacteria[index] || newBacteria[index]) {
-                    let filter = possible.filter((move) => {
-                        return move !== possible[rand];
-                    });
-                    if (filter.length === 0 || possible === filter) {
-                        break; // Don't move this since it cannot move
-                    }
-                    possible = filter;
-                    rand = BacteriaGrid.prng.nextInt(0, possible.length - 1);
-                    index = possible[rand];
+                let y = Math.floor(i / BacteriaGrid.GRID_WIDTH);
+                let x = i % BacteriaGrid.GRID_WIDTH;
+                let index = this.moveBacterium(bac, x, y);
+                if (index) {
+                  newBacteria[index] = bac;
                 }
-                newBacteria[index] = bac;
+                // bac "dies" if there isn't a valid index
             }
         }
         this.bacteria = newBacteria;
+    }
+
+    /*
+     * Generates an index for the given bacteria to be placed at.
+     *
+     * bac - Bacterium to place.
+     * x - current x coordinate of bac.
+     * y - current y coordinate of bac.
+     *
+     * returns a valid index for bac to be placed at or null if there isn't a
+     * valid index possible.
+     */
+    private moveBacterium(bac: Bacterium, x: number, y: number): number|null {
+        let moves = bac.possibleMoves();
+        // Remove invalid indexes from the list of possible moves
+        moves = moves.filter((coord) => {
+            let thisX = coord[0] + x;
+            let thisY = coord[1] + y;
+            let thisIndex = thisX + thisY * BacteriaGrid.GRID_WIDTH;
+            return thisX >= 0 && thisX < BacteriaGrid.GRID_WIDTH && thisY >= 0
+                && thisY < BacteriaGrid.GRID_HEIGHT && !this.bacteria[thisIndex];
+        });
+        if (moves.length > 0) {
+            let move = moves[BacteriaGrid.prng.nextInt(0, moves.length - 1)];
+            return (move[0] + x) + (move[1] + y) * BacteriaGrid.GRID_WIDTH;
+        } else {
+            // Return null if no valid indexes
+            return null;
+        }
     }
 
     reproduce(): void {
         for (let i = 0; i < this.bacteria.length; i++) {
             if (this.bacteria[i] && BacteriaGrid.prng.next() <= 0.25) {
                 let bac = this.bacteria[i].asexuallyReproduce();
-                let x = Math.floor(i / BacteriaGrid.GRID_WIDTH);
-                let y = i % BacteriaGrid.GRID_WIDTH;
+                let y = Math.floor(i / BacteriaGrid.GRID_WIDTH);
+                let x = i % BacteriaGrid.GRID_WIDTH;
                 this.placeBacteria(bac, x, y);
             }
         }
