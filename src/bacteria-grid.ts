@@ -91,10 +91,6 @@ class BacteriaGrid {
                         return move !== possible[rand];
                     });
                     if (filter.length === 0 || possible === filter) {
-                        console.error("No moves");
-                        throw new Error("Overlap");
-                        //newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX] =
-                        //    bac;
                         break; // Don't move this since it cannot move
                     }
                     possible = filter;
