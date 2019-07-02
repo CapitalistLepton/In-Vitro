@@ -29,6 +29,7 @@ class BacteriaGrid {
     private static prng = new Prando(42);
 
     private bacteria: Array<Bacterium>;
+    private previous: Array<Bacterium>;
 
     constructor() {
         this.bacteria = new Array(BacteriaGrid.GRID_WIDTH * BacteriaGrid.GRID_HEIGHT);
@@ -39,7 +40,7 @@ class BacteriaGrid {
                 rand = BacteriaGrid.prng.nextInt(0, BacteriaGrid.GRID_WIDTH *
                     BacteriaGrid.GRID_HEIGHT - 1);
             }
-            this.bacteria[rand] = new Bacterium();
+            this.bacteria[rand] = new Bacterium(i);
         }
     }
 
@@ -69,7 +70,7 @@ class BacteriaGrid {
         let newBacteria = new Array(size);
         for (let i = 0; i < size; i++) {
             let bac = this.bacteria[i]
-            if (bac != null) {
+            if (bac) {
                 let thisY = Math.floor(i / BacteriaGrid.GRID_WIDTH);
                 let thisX = i % BacteriaGrid.GRID_WIDTH;
                 let moves = bac.possibleMoves();
@@ -80,28 +81,62 @@ class BacteriaGrid {
                         && y < BacteriaGrid.GRID_HEIGHT;
                 });
                 let possible = moves.map((coord) => {
-                    return coord[0] + thisX +
-                        (coord[1] + thisY) * BacteriaGrid.GRID_WIDTH;
+                    return (coord[0] + thisX) +
+                        ((coord[1] + thisY) * BacteriaGrid.GRID_WIDTH);
                 });
-                console.debug(possible);
                 let rand = BacteriaGrid.prng.nextInt(0, possible.length - 1);
-                console.debug(rand);
                 let index = possible[rand];
-                while (this.bacteria[possible[rand]] != null) {
+                // Check if the place is occupied
+                while (this.bacteria[index] || newBacteria[index]) {
                     possible = possible.splice(rand, 1);
                     if (possible.length == 0 || possible == possible.splice(rand, 1)) {
                         console.error("No moves");
+                        if (newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX] != null) {
+                            throw new Error("Overlapping bacteria");
+                        }
                         newBacteria[thisY * BacteriaGrid.GRID_WIDTH + thisX] =
                             bac;
                         break; // Don't move this since it cannot move
                     }
-                    console.log(possible.length);
                     rand = BacteriaGrid.prng.nextInt(0, possible.length - 1);
                 }
                 newBacteria[possible[rand]] = bac;
             }
         }
         this.bacteria = newBacteria;
+    }
+
+    count(): void {
+        const size = BacteriaGrid.GRID_WIDTH * BacteriaGrid.GRID_HEIGHT;
+        let count = 0;
+        let positions = new Array();
+        for (let i = 0; i < size; i++) {
+            if (this.bacteria[i] != null) {
+                let x = i % BacteriaGrid.GRID_WIDTH;
+                let y = Math.floor(i / BacteriaGrid.GRID_HEIGHT);
+                this.bacteria[i].setPos(x, y);
+                positions.push(this.bacteria[i]);
+                count++;
+            }
+        }
+        if (count < BacteriaGrid.NUM_BACTERIA) {
+            console.error(positions);
+            console.error(this.previous);
+            //let missing = this.previous.filter((bac) => {
+            //    let contains = false;
+            //    for (let i = 0; i < positions.length; i++) {
+            //        if (positions[i].id == bac.id) {
+            //            contains = true;
+            //            break;
+            //        }
+            //    }
+            //    return !contains;
+            //})[0];
+            //console.error(missing);
+            throw new Error("Lost some bacteria");
+        } else {
+            this.previous = positions;
+        }
     }
 }
 

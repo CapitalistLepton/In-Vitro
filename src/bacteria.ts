@@ -25,8 +25,10 @@ class Bacterium {
 
     private genome: string;
     private moves: Array<[number, number]>;
+    public position: [number, number];
+    public id: number;
 
-    constructor() {
+    constructor(id: number) {
         let random = Bacterium.prng.next();
         if (random > 0.75) {
             this.genome = "AA";
@@ -45,6 +47,8 @@ class Bacterium {
 
         this.genome += "Cc";
         this.genome += "Dd";
+
+        this.id = id;
     }
 
     possibleMoves(): Array<[number, number]> {
@@ -66,6 +70,16 @@ class Bacterium {
             }
         }
         return this.moves;
+    }
+
+    getPos(): [number, number] {
+        return this.position;
+    }
+
+    setPos(x: number, y: number): void {
+        this.position = [-1, -1];
+        this.position[0] = x;
+        this.position[1] = y;
     }
 
     toString(): string {
