@@ -114,6 +114,16 @@ class BacteriaGrid {
         }
     }
 
+    count(): number {
+        let count = 0;
+        for (let i = 0; i < this.bacteria.length; i++) {
+            if (this.bacteria[i]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     private placeBacteria(bac: Bacterium, x: number, y: number): void {
        let possible = [
             (x - 1) + (y - 1) * BacteriaGrid.GRID_WIDTH,

@@ -51,6 +51,13 @@ class GameEngine {
     private update() {
         this.bacteriaGrid.moveBacteria();
         this.bacteriaGrid.reproduce();
+
+        // Update the UI
+        let cellLabel = document.getElementById("cell-count");
+        if (!cellLabel) {
+            throw new Error("HTML document is missing cell count label");
+        }
+        cellLabel.innerHTML = this.bacteriaGrid.count().toString();
     }
 
     private draw() {
